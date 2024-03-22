@@ -7,11 +7,13 @@ import os
 token = config.BOT_TOKEN
 bot = telebot.TeleBot(token)
 
+# Функция получения списка файлов с расширениями '.xlsx', '.xls', '.odt'
 def get_folder_files(folder):
     files = []
     files += [each for each in os.listdir(folder) if each.endswith('.xlsx') or each.endswith('.xls') or each.endswith('.odt')]
     return files
 
+# Функция start
 @bot.message_handler(commands=['start'])
 def hello(message):
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False)
@@ -20,6 +22,7 @@ def hello(message):
     for files_item in files:
         first_symbol = str(files_item)
         first_symbol = first_symbol[0]
+        # Временные файлы не игнорируем
         if first_symbol != '~':
             keyboard.add(types.KeyboardButton(files_item))
     bot.send_message(message.chat.id, f'{message.from_user.first_name}, ты можешь скачать следующие файлы:', reply_markup=keyboard)
@@ -29,6 +32,7 @@ def hello(message):
 def welcome_help(message):
     bot.send_message(message.chat.id, 'Этот бот предназначен для обмена файлами с сервисом')
 
+# Функция получения табличного файла
 @bot.message_handler(content_types=['text'])
 def main_menu(message):
     files = get_folder_files(config.folder)
@@ -36,13 +40,16 @@ def main_menu(message):
     for files_item in files:
         if message.text == files_item:
             first_symbol = files_item[0]
+            # Временные файлы не игнорируем
             if first_symbol != '~':
+                # формируем полный путь к файлу
                 full_files_item = config.folder + os.sep + files_item
                 f = open(full_files_item, 'rb')
                 # bot.send_document(message.chat.id, document=f, caption=files_item)
                 bot.send_document(message.chat.id, document=f)
             break
 
+# Заготовка функции отправки файла на сервер
 @bot.message_handler(content_types=["document"])
 def handle_docs(message):
     bot.send_message(message.chat.id, message.text)
@@ -52,7 +59,5 @@ def handle_docs(message):
     newFile = message.effective_attachment.get_file()
     newFile.download('file_name')
 
-
-# files = get_folder_files(folder)
-# print(files)
+# Запуск бота
 bot.polling(none_stop=True)

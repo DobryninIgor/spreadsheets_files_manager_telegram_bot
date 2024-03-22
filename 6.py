@@ -24,6 +24,11 @@ def hello(message):
             keyboard.add(types.KeyboardButton(files_item))
     bot.send_message(message.chat.id, f'{message.from_user.first_name}, ты можешь скачать следующие файлы:', reply_markup=keyboard)
 
+# Функция, обрабатывающая команду /info
+@bot.message_handler(commands=['info'])
+def welcome_help(message):
+    bot.send_message(message.chat.id, 'Этот предназначен для обмена файлами с сервисом')
+
 @bot.message_handler(content_types=['text'])
 def main_menu(message):
     files = get_folder_files(config.folder)

@@ -9,7 +9,7 @@ bot = telebot.TeleBot(token)
 
 def get_folder_files(folder):
     files = []
-    files += [each for each in os.listdir(folder) if each.endswith('.xlsx')]
+    files += [each for each in os.listdir(folder) if each.endswith('.xlsx') or each.endswith('.xls') or each.endswith('.odt')]
     return files
 
 @bot.message_handler(commands=['start'])
@@ -27,7 +27,7 @@ def hello(message):
 # Функция, обрабатывающая команду /info
 @bot.message_handler(commands=['info'])
 def welcome_help(message):
-    bot.send_message(message.chat.id, 'Этот предназначен для обмена файлами с сервисом')
+    bot.send_message(message.chat.id, 'Этот бот предназначен для обмена файлами с сервисом')
 
 @bot.message_handler(content_types=['text'])
 def main_menu(message):
